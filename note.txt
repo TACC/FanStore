@@ -1,0 +1,23 @@
+/work/00410/huang/stampede2/fs
+
+unset DIR_BCAST
+export FS_ROOT=/tmp/fs_`id -u`
+export LD_PRELOAD=/work/00410/huang/stampede2/fs/wrapper/wrapper.so
+
+
+
+
+
+#!/bin/bash
+
+input="/work/00410/huang/maverick2/data_dir"
+
+while IFS= read -r var
+do
+  diff /home/00410/huang/as/fanstore/data_dir/${var} /tmp/fs_800193/${var}
+done < "$input"
+
+
+nBytesUnpacked (8) != p_MetaData[file_idx].size (1034718) for more/01965.jpg
+
+
