@@ -14,9 +14,9 @@
 #define MAX_WORKER   (512)
 
 #define MAX_NAME_LEN	(256)
-#define MAX_FILE	(1024*1024*1)
-#define MAX_DIR		(32*1024)
-#define MAX_FILE_SIZE	(160*1024*1024)
+//#define MAX_FILE	(1024*1024*2)
+#define MAX_DIR		(128*1024)
+#define MAX_FILE_SIZE	(512*1024*1024)
 #define LEN_REC		(320)
 #define MAX_PARTITION	(2048)
 #define MAX_DIR_ENTRY_LEN	(64)
@@ -29,13 +29,17 @@
 #endif
 
 int nPartition=1;
+int nLineRec=0;
 
-char szFileName[MAX_FILE][MAX_NAME_LEN];
-struct stat stat_list[MAX_FILE];
-int nFile_in_Partition[MAX_PARTITION];
+//char szFileName[MAX_FILE][MAX_NAME_LEN];
+//struct stat stat_list[MAX_FILE];
+char **szFileName, *p_szFileName=NULL;
+struct stat *stat_list;
+
 char szEntryList[MAX_ENTRY_PER_DIR][MAX_DIR_ENTRY_LEN];
-unsigned char szData[MAX_FILE_SIZE], szDataPacked[MAX_FILE_SIZE], szDataUnpacked[MAX_FILE_SIZE];
 char szDirName[MAX_DIR][MAX_NAME_LEN];
+int nFile_in_Partition[MAX_PARTITION];
+unsigned char szData[MAX_FILE_SIZE], szDataPacked[MAX_FILE_SIZE], szDataUnpacked[MAX_FILE_SIZE];
 
 typedef struct	{
 	int workerid;
@@ -188,7 +192,7 @@ int main(int argc, char *argv[])
 	pthread_t threadlist[MAX_WORKER];
 	LZSSE8_OptimalParseState *pState;
 	long int nBytesPacked, nBytesUnpacked;
-	int nFile_per_Partition, nLen_File_Name, nLen_stat, Pack_Level;
+	int nFile_per_Partition, nLen_File_Name, nLen_stat, Pack_Level=0;
 	PARAM Param[MAX_WORKER];
 
 	if( (argc < 3) || (argc > 5) )	{
@@ -232,6 +236,47 @@ int main(int argc, char *argv[])
 		printf("Fail to open file %s\n", szInput);
 		exit(1);
 	}
+
+	while(1)	{
+		if(feof(fIn))	{
+			break;
+		}
+		ReadLine = fgets(szLine, 256, fIn);
+		if(ReadLine == NULL)	{
+			break;
+		}
+		nLen = strlen(szLine);
+		if(nLen >= 1)	{
+			nLineRec++;
+		}
+	}
+	printf("Found %d records in file %s\n\n", nLineRec, szInput);
+
+	// allocate memory
+	stat_list = (struct stat *)malloc(sizeof(struct stat)*nLineRec);
+	if(stat_list == NULL)	{
+		printf("Fail to allocate memory for stat_list.\nQuit\n");
+		fclose(fIn);
+		exit(1);
+	}
+
+	szFileName = (char **)malloc(sizeof(char *)*nLineRec);
+	if(szFileName == NULL)	{
+		printf("Fail to allocate memory for szFileName\nQuit\n");
+		exit(1);
+	}
+	p_szFileName = (char *)malloc(sizeof(char)*nLineRec*MAX_NAME_LEN);
+	if(p_szFileName == NULL)	{
+		printf("Fail to allocate memory for p_szFileName\nQuit\n");
+		exit(1);
+	}
+	for(i=0; i<nLineRec; i++)	{
+		szFileName[i] = p_szFileName + i*MAX_NAME_LEN;
+	}
+
+	
+
+	fseek(fIn, 0, SEEK_SET);
 
 	if(szBCastTag[0])	{
 		fd_bcast = open("fs_bcast", O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
@@ -278,6 +323,10 @@ int main(int argc, char *argv[])
 				}
 				file_stat.st_size = 0;	// set size for dir as zero
 				nDir++;
+				if(nDir > MAX_DIR)	{
+					printf("nDir > MAX_DIR\nYou need to increase MAX_DIR\nQuit\n");
+					exit(1);
+				}
 			}
 //			else	{
 				if(szBCastTag[0] && strstr(szLine, szBCastTag) )	{	// a file will be broadcasted to all nodes. Now dir is accounted as a file too!!!
@@ -333,7 +382,17 @@ int main(int argc, char *argv[])
 					else
 						strcpy(szFileName[nFile], szLine);
 					memcpy(&(stat_list[nFile]), &file_stat, nLen_stat);
+
+					if(file_stat.st_size > MAX_FILE_SIZE)	{
+						printf("file_stat.st_size > MAX_FILE_SIZE.\nfile_stat.st_size = %ld. You need to increase MAX_FILE_SIZE.\nQuit\n", (long int)(file_stat.st_size));
+						exit(1);
+					}
+
 					nFile++;
+//					if(nFile >= MAX_FILE)	{
+//						printf("nFile >= MAX_FILE.\nYou need to increase MAX_FILE.\n");
+//						exit(1);
+//					}
 				}
 //			}
 		}
@@ -454,6 +513,10 @@ int main(int argc, char *argv[])
 				else	{
 					strcpy(szEntryList[nEntry], ep->d_name);
 					nEntry++;
+					if(nEntry > MAX_ENTRY_PER_DIR)	{
+						printf("nEntry > MAX_ENTRY_PER_DIR\nYou need to increase MAX_ENTRY_PER_DIR\nQuit\n");
+						exit(1);
+					}
 				}
 //				printf("%s\n", ep->d_name);
 			}
@@ -474,5 +537,12 @@ int main(int argc, char *argv[])
 			return 2;
 		}
 	}
+
+	free(stat_list);
+	free(szFileName);
+	free(p_szFileName);
+
+	return 0;
 }
+
 
