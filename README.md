@@ -3,7 +3,8 @@ FanStore is a transient shared object store designed for disitrbuted deep learni
 
 Emperically, FanStore has enbabled deep learning training with millions of small files (KB--MB), with a total size of ~100GB on hundreds of compute nodes with close-to-perfect scaling performanace. The following figure shows the ResNet-50 performance scalability of a GPU cluster (4 GPUs per node) an a CPU cluster with Keras, TensorFlow, and Horovod. 
 
-![alt text](https://github.com/TACC/FanStore/blob/master/docs/figures/ResNet-50.png =320x240 "ResNet-50 performance on a GPU and CPU cluster")
+<img src="https://github.com/favicon.ico" width="320">
+<!--- ![alt text](https://github.com/TACC/FanStore/blob/master/docs/figures/ResNet-50.png =320x240 "ResNet-50 performance on a GPU and CPU cluster") --->
 
 Technically, FanStore partitions dataset into chunks and stores one or multiple chunks on each node. Metadata of the dataset is replicated across nodes for highly current access. File data is either accessed locally through PCIE or remotely through round-trip MPI messages, as shown in the following figure. 
 
