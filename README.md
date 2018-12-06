@@ -41,7 +41,27 @@ If you do not have a validation dataset, use **_NULL_** as a place holder. E.g.
 
      /path/to/prep 8 file.list NULL
 
-After successfuly compeletion of the preparation, you should see a list of file partitions with name of **_fs\_\*_**" and a **_dir.list_** file. These are the prepared datasets.
+After successfuly compeletion of the preparation, you should see a list of file partitions with name of **_fs\_\*_** and a **_dir.list_** file. These are the prepared datasets.
 
 ### Loading Data
 Now let's load the prepared dataset to local storage. In this case, we use **_/tmp_**.
+Assuming there is a list of four nodes of the current allocation, and we are  **_mpiexec.hydra_** to launch MPI jobs, the following command is to load the data
+
+    export FS_ROOT=/tmp/fs_`id -u`
+    export DIR_BCAST=/tmp/fs_`id -u`/val
+    unset LD_PRELOAD
+    mpiexec.hydra -f hostfile -np 4 -ppn 1 /path/to/fanstore/read_remote_file 8 /path/to/dataset
+
+This command assumes that there is a **_val_** directory that needs to be broadcasted. If you do not have such a directory, simply leave DIR_BCAST unset. In this case, each node is storing 2 chunks. If there is extra space on local storage, we can ask each node to store more chunks as a multiple of the current count of assigned chunks. For example, if each node stores 2 chunks, we can let each node store 4 chunks by running
+
+    mpiexec.hydra -f hostfile -np 4 -ppn 1 /path/to/fanstore/read_remote_file 8 /path/to/dataset 1
+
+or 6 chunks by running
+ 
+    mpiexec.hydra -f hostfile -np 4 -ppn 1 /path/to/fanstore/read_remote_file 8 /path/to/dataset 2
+
+After loading the data, we need to set the **__LD\_PRELOAD__** environment variable, so that FanStore can intercept the I/O functions in GNU libc. 
+
+    export LD_PRELOAD=/path/to/fanstore/wrapper.so
+
+Now FanStore is mounted as **__/tmp/fs\_${uid}__** in user space. Now you can specify the training data path as **__/tmp/fs\_${uid}/train__** and validation data path as **__/tmp/fs\_${uid}/val__**, and you are ready to go.
