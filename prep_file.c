@@ -14,7 +14,7 @@
 #define MAX_WORKER   (512)
 
 #define MAX_NAME_LEN	(256)
-#define MAX_FILE	(1024*1024*2)
+//#define MAX_FILE	(1024*1024*2)
 #define MAX_DIR		(128*1024)
 #define MAX_FILE_SIZE	(512*1024*1024)
 #define LEN_REC		(320)
@@ -389,10 +389,10 @@ int main(int argc, char *argv[])
 					}
 
 					nFile++;
-					if(nFile >= MAX_FILE)	{
-						printf("nFile >= MAX_FILE.\nYou need to increase MAX_FILE.\n");
-						exit(1);
-					}
+//					if(nFile >= MAX_FILE)	{
+//						printf("nFile >= MAX_FILE.\nYou need to increase MAX_FILE.\n");
+//						exit(1);
+//					}
 				}
 //			}
 		}
