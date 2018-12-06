@@ -10,5 +10,35 @@ Technically, FanStore partitions dataset into chunks and stores one or multiple 
 
 ![alt text](https://github.com/TACC/FanStore/blob/master/docs/figures/architecture.png "FanStore Architecture")
 
+## Limitation
+For now, FanStore only surpports x86_64 instruction set and has been tested with Intel Xeon Phi 7250, Intel Xeon Platinum 8160, and Intel Xeon CPUs with NVIDIA V100 and GTX 1080 Ti GPUs.
+
+We are in the progress of porting FanStore to IBM POWER9 platforms.
 
 ## Installation
+
+    git clone https://github.com/TACC/FanStore.git
+    cd FanStore
+    make
+
+## Usage
+To user FanStore, there are two steps: data preparation and training execution.
+
+### Data Preparation
+Assuming you are in the dataset directory, in which there is a training dataset in *train* and a validation dataset called *val*, first, we need to generate a list of files and directories
+
+    find ./ > file.list
+
+Then we build the dataset using FanStore. The following command line prepares the dataset in such a way: all data in the *val* path will be broadcasted to all nodes, while the rest of the files will be scattered.
+
+    /path/to/prep 8 file.list val
+
+Optionnally, you can pass a compression level parameter to the above command, e.g.
+
+    /path/to/prep 8 file.list val pack_10
+
+If you do not have a validation dataset, use *NULL* as a place holder. E.g.
+
+     /path/to/prep 8 file.list NULL
+
+After successfuly compeletion of the preparation, you should see a list of file partitions with name of "fs_*" and a *dir.list* file. These are the prepared datasets.
