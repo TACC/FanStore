@@ -5,4 +5,4 @@ Emperically, FanStore has enbabled deep learning training with millions of small
 
 Technically, FanStore partitions dataset into chunks and stores one or multiple chunks on each node. Metadata of the dataset is replicated across nodes for highly current access. File data is either accessed locally through PCIE or remotely through round-trip MPI messages. 
 
-![alt text](https://github.com/TACC/FanStore/blob/master/docs/figures/architecture.png "FanStore Architecture")
+![alt text](https://github.com/TACC/FanStore/blob/master/docs/figures/architecture.png =200x "FanStore Architecture")
