@@ -22,14 +22,14 @@ We are in the progress of porting FanStore to IBM POWER9 platforms.
     make
 
 ## Usage
-To user FanStore, there are two steps: data preparation and training execution.
+To user FanStore, there are two steps: data preparation and loading.
 
 ### Data Preparation
-Assuming you are in the dataset directory, in which there is a training dataset in *train* and a validation dataset called *val*, first, we need to generate a list of files and directories
+Assuming you are in the dataset directory, in which there is a training dataset in **_train_** and a validation dataset called **_val_**, first, we need to generate a list of files and directories
 
     find ./ > file.list
 
-Then we build the dataset using FanStore. The following command line prepares the dataset in such a way: all data in the *val* path will be broadcasted to all nodes, while the rest of the files will be scattered.
+Then we build the dataset using FanStore. The following command line prepares the dataset in such a way: all data in the **_val_** path will be broadcasted to all nodes, while the rest of the files will be scattered.
 
     /path/to/prep 8 file.list val
 
@@ -37,8 +37,11 @@ Optionnally, you can pass a compression level parameter to the above command, e.
 
     /path/to/prep 8 file.list val pack_10
 
-If you do not have a validation dataset, use *NULL* as a place holder. E.g.
+If you do not have a validation dataset, use **_NULL_** as a place holder. E.g.
 
      /path/to/prep 8 file.list NULL
 
-After successfuly compeletion of the preparation, you should see a list of file partitions with name of "fs_*" and a *dir.list* file. These are the prepared datasets.
+After successfuly compeletion of the preparation, you should see a list of file partitions with name of **_fs\_\*_**" and a **_dir.list_** file. These are the prepared datasets.
+
+### Loading Data
+Now let's load the prepared dataset to local storage. In this case, we use **_/tmp_**.
