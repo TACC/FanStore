@@ -802,7 +802,6 @@ static void Broadcast_Shared_Files(void)
 	}
 	MPI_Bcast(&nFile_Bcast, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-
 	if(nFile_Bcast == 0)	{	// no file needs to be broadcasted.
 		if(fd_bcast != -1)	{
 			close(fd_bcast);
@@ -814,7 +813,11 @@ static void Broadcast_Shared_Files(void)
 
 	for(i=0; i<nFile_Bcast; i++)	{
 		if(rank == 0)	{
-			read_all(fd_bcast, FileInfo.szName, nLen_File_Name);
+			ReadBytes = read_all(fd_bcast, FileInfo.szName, nLen_File_Name);
+			if(ReadBytes != nLen_File_Name)	{
+				printf("ReadBytes != nLen_File_Name\nReadBytes\n", ReadBytes);
+			}
+//			printf("Read file: %s nLen_File_Name = %d  i = %d\n", FileInfo.szName, nLen_File_Name, i);
 			read_all(fd_bcast, &(FileInfo.size), sizeof(long int));
 			read_all(fd_bcast, buff, FileInfo.size);
 

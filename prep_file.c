@@ -341,7 +341,7 @@ int main(int argc, char *argv[])
 						write_all(fd_bcast, szLine+2, nLen_File_Name);
 					else
 						write_all(fd_bcast, szLine, nLen_File_Name);
-
+/*
 					if(Pack_Level > 0)	{	// store packed data
 						if(file_stat.st_size)	{
 							pState = LZSSE8_MakeOptimalParseState(file_stat.st_size);
@@ -368,11 +368,12 @@ int main(int argc, char *argv[])
 						}
 					}
 					else	{	// unpacked. Original data
-//						write_all(fd_bcast, &(file_stat.st_size), sizeof(long int));
-						nBytesPacked = 0;
-						write_all(fd_bcast, &nBytesPacked, sizeof(long int));
+*/
+						write_all(fd_bcast, &(file_stat.st_size), sizeof(long int));
+//						nBytesPacked = 0;
+//						write_all(fd_bcast, &nBytesPacked, sizeof(long int));
 						write_all(fd_bcast, szData, file_stat.st_size);
-					}
+//					}
 
 					nFile_BCast++;
 				}
