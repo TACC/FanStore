@@ -1074,7 +1074,7 @@ inline long int dequeue(void)
 {
 	long int ret, back_tmp, job_nxt, job_modify;
 	int file_idx_cur, Op_Tag_cur;
-	int file_idx_nxt, Op_Tag_nxt;
+	int file_idx_nxt, Op_Tag_nxt, count=0;
 
 //	if(bDEBUG) printf("dequeue()\n");
 	if (pthread_mutex_lock(p_queue_lock) != 0) {
@@ -1085,7 +1085,9 @@ inline long int dequeue(void)
 	
 	ret = *p_front;
 	(*p_front)++;
-/*
+
+
+
 	ret = Queued_Job_List[ret & QUEUE_FULL];
 
 	file_idx_cur = ret & 0xFFFFFFFF;
@@ -1103,10 +1105,12 @@ inline long int dequeue(void)
 					break;
 				}
 			}
+			count++;
+			if(count > 16) break;
 		}
 	}
 
-*/	
+	
 	
   if (pthread_mutex_unlock(p_queue_lock) != 0) {
 //  if (pthread_mutex_unlock(&mut) != 0) {
@@ -1114,7 +1118,7 @@ inline long int dequeue(void)
 	  exit(2);
   }
 
-  ret = Queued_Job_List[ret & QUEUE_FULL];
+//  ret = Queued_Job_List[ret & QUEUE_FULL];
 
   return ret;
 }

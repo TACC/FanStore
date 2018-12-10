@@ -23,6 +23,8 @@
 //#define MAX_ENTRY_PER_DIR	(65536)
 #define MAX_ENTRY_PER_DIR	(327680)
 
+long int PACK_TAG=0x0x4741545F4B434150;	// tag string "PACK_TAG"
+
 #ifndef MY_MIN
 #define MY_MIN
 #define min(a,b) ( ((a)<(b)) ? ((a)) : ((b)) )
@@ -341,7 +343,7 @@ int main(int argc, char *argv[])
 						write_all(fd_bcast, szLine+2, nLen_File_Name);
 					else
 						write_all(fd_bcast, szLine, nLen_File_Name);
-/*
+
 					if(Pack_Level > 0)	{	// store packed data
 						if(file_stat.st_size)	{
 							pState = LZSSE8_MakeOptimalParseState(file_stat.st_size);
@@ -349,15 +351,16 @@ int main(int argc, char *argv[])
 							nBytesPacked = LZSSE8_CompressOptimalParse(pState, szData, file_stat.st_size, szDataPacked, MAX_FILE_SIZE, Pack_Level);
 							nBytesUnpacked = LZSSE8_Decompress(szDataPacked, nBytesPacked, szDataUnpacked, MAX_FILE_SIZE);
 
-							if( (nBytesUnpacked != stat_list[idx].st_size) || (nBytesPacked > stat_list[idx].st_size) )	{	// fail to unpack or no benefit to pack
-								printf("Warning: No packing for file %s\n", szFileName[idx]);
-								nBytesPacked = 0;
-								write_all(fd, &nBytesPacked, sizeof(long int));
-								write_all(fd, szData, stat_list[idx].st_size);
+							if( (nBytesUnpacked != stat_list[idx].st_size) || ( (nBytesPacked+8) > stat_list[idx].st_size) )	{	// fail to unpack or no benefit to pack. Write the original file
+//								printf("Warning: No packing for file %s\n", szFileName[idx]);
+								write_all(fd_bcast, &(file_stat.st_size), sizeof(long int));
+								write_all(fd_bcast, szData, file_stat.st_size);
 							}
 							else	{
+								nBytesPacked += sizeof(long int);	// one tag is used at the very beginning of unpacked bcast file 
 								write_all(fd_bcast, &nBytesPacked, sizeof(long int));
-								write_all(fd_bcast, szDataPacked, nBytesPacked);
+								write_all(fd_bcast, &PACK_TAG, sizeof(long int));	// write tag
+								write_all(fd_bcast, szDataPacked, nBytesPacked-sizeof(long int));	// write packed content
 							}
 							
 							LZSSE8_FreeOptimalParseState(pState);
@@ -368,12 +371,9 @@ int main(int argc, char *argv[])
 						}
 					}
 					else	{	// unpacked. Original data
-*/
 						write_all(fd_bcast, &(file_stat.st_size), sizeof(long int));
-//						nBytesPacked = 0;
-//						write_all(fd_bcast, &nBytesPacked, sizeof(long int));
 						write_all(fd_bcast, szData, file_stat.st_size);
-//					}
+					}
 
 					nFile_BCast++;
 				}
