@@ -23,7 +23,7 @@
 //#define MAX_ENTRY_PER_DIR	(65536)
 #define MAX_ENTRY_PER_DIR	(327680)
 
-long int PACK_TAG=0x0x4741545F4B434150;	// tag string "PACK_TAG"
+long int PACK_TAG=0x4741545F4B434150;	// tag string "PACK_TAG"
 
 #ifndef MY_MIN
 #define MY_MIN
