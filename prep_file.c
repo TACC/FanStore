@@ -1,3 +1,9 @@
+/*
+Written by Lei Huang (huang@tacc.utexas.edu)
+       and Zhao Zhang (zzhang@tacc.utexas.edu) at TACC. 
+All rights are reserved.
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
