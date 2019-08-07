@@ -24,7 +24,6 @@ read_remote_file:
 	gcc -c -DNCX_PTR_SIZE=8 -pipe  -O3  -DLOG_LEVEL=4  -DPAGE_MERGE  xxhash.c
 	gcc -c -DNCX_PTR_SIZE=8 -pipe  -O3  -DLOG_LEVEL=4  -DPAGE_MERGE  ncx_slab.c
 	mpicxx -o read_remote_file read_remote_file.o dict.o xxhash.o ncx_slab.o lzsse8.o
-	chmod u+x wrapper.so
 
 clean:
 	rm *.o prep read_remote_file wrapper.so
