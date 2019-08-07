@@ -36,7 +36,7 @@ All rights are reserved.
 #include <fcntl.h>
 
 #include "dict.h"
-#include "lzsse8.h"
+#include "../lzsse8.h"
 
 //#define FAKE_FD	(10000000)	// >= this number will be treated as a fake fd
 //#define FAKE_DIR_FD	(20000000)	// >= this number will be treated as a fake fd. Used for dir
@@ -69,7 +69,7 @@ All rights are reserved.
 
 #define MAX_INSTUMENTS	(24)
 
-long int PACK_TAG=0x0x4741545F4B434150;	// tag string "PACK_TAG"
+long int PACK_TAG=0x4741545F4B434150;	// tag string "PACK_TAG"
 
 static int Max_Bytes_Disassemble=24;
 
