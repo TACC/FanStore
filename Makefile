@@ -1,19 +1,16 @@
-all: prep wrapper read_remote_file
+all: prep read_remote_file lib
 
-wrapper:
-	cd wrapper
-	gcc -O3 -fPIC -c dict.c
-	gcc -O3 -fPIC -c xxhash.c
-	gcc -O3 -fPIC -c libudis86/decode.c
-	gcc -O3 -fPIC -c libudis86/itab.c
-	gcc -O3 -fPIC -c libudis86/syn-att.c 
-	gcc -O3 -fPIC -c libudis86/syn.c  
-	gcc -O3 -fPIC -c libudis86/syn-intel.c
-	gcc -O3 -fPIC -c libudis86/udis86.c
-	gcc -O3 -fPIC -c wrapper.c
-	g++ -fPIC -shared -o ../wrapper.so wrapper.o dict.o xxhash.o decode.o itab.o syn-att.o syn.o syn-intel.o udis86.o ../lzsse8.o -ldl -lrt
-	cd ..
-	
+lib:
+	gcc -O3 -fPIC -c wrapper/dict.c -o wrapper/dict.o
+	gcc -O3 -fPIC -c wrapper/libudis86/decode.c -o wrapper/decode.o
+	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/itab.c -o wrapper/itab.o
+	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/syn-att.c -o wrapper/syn-att.o
+	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/syn.c -o wrapper/syn.o 
+	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/syn-intel.c -o wrapper/syn-intel.o
+	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/udis86.c -o wrapper/udis86.o
+	gcc -O3 -fPIC -c wrapper/wrapper.c -o wrapper/wrapper.o
+	g++ -fPIC -shared -o wrapper.so wrapper/wrapper.o wrapper/dict.o wrapper/xxhash.o wrapper/decode.o wrapper/itab.o wrapper/syn-att.o wrapper/syn.o wrapper/syn-intel.o wrapper/udis86.o lzsse8.o -ldl -lrt
+
 prep: 
 	g++  -fPIC -Wno-unknown-pragmas -Wno-sign-compare -Wno-conversion -fomit-frame-pointer -fstrict-aliasing -ffast-math -O3 -DNDEBUG -msse4.1 lzsse8.cpp -c
 	g++ -O2 -o prep prep_file.c lzsse8.o -lpthread
