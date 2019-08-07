@@ -2,6 +2,7 @@ all: prep read_remote_file lib
 
 lib:
 	gcc -O3 -fPIC -c wrapper/dict.c -o wrapper/dict.o
+	gcc -O3 -fPIC -c wrapper/xxhash.c -o wrapper/xxhash.o
 	gcc -O3 -fPIC -c wrapper/libudis86/decode.c -o wrapper/decode.o
 	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/itab.c -o wrapper/itab.o
 	gcc -O3 -fPIC -c ${PWD}/wrapper/libudis86/syn-att.c -o wrapper/syn-att.o
