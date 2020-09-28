@@ -1802,7 +1802,7 @@ inline static size_t Set_Block_Size(void *pAddr)
 
 	pOrg = (unsigned long int)pAddr;
 	res = pOrg % page_size;
-	if( (res + 5) > page_size )	{	// close to the boundary of two memory pages 
+	if( (res + 8) > page_size )	{	// close to the boundary of two memory pages 
 		return (size_t)(page_size*2);
 	}
 	else	{
